@@ -4,7 +4,8 @@
   "version": "1.1",
   "description": "Typing German special character faster with easy shortcuts",
   "permissions": [
-    "activeTab"
+    "http://*/*",
+    "https://*/*"
   ],
   "browser_action": {
     "default_title": "Quick Umlaut"
@@ -18,7 +19,8 @@
       "js": [
         "js/content.js"
       ],
-      "run_at": "document_end"
+      "run_at": "document_end",
+      "all_frames": true
     }
   ],
   "icons": {
