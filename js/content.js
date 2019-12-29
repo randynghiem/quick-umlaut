@@ -1,4 +1,7 @@
 (function() {
+  // register keydown event
+  document.addEventListener("keydown", handleKeyDown, true);
+
   //mapped to German umlaut characters
   var keyCodes = {
     A: "\u00c4",
@@ -13,8 +16,15 @@
 
   // handle key down event
   function handleKeyDown(e) {
-    e = e || window.event;
+    var input = getCharCode(e);
 
+    if (e.altKey && keyCodes[input]) {
+      insertTo(e, keyCodes[input]);
+    }
+  }
+
+  // determine the input character
+  function getCharCode(e) {
     var input;
 
     if (e.key !== undefined) {
@@ -26,19 +36,27 @@
         input = input.toLocaleLowerCase();
       }
     }
-
-    if (e.altKey && keyCodes[input]) {
-      e.preventDefault();
-      insertTo(document.activeElement, keyCodes[input]);
-    }
+    return input;
   }
 
   // insert character at the cursor
-  function insertTo(elem, key) {
-    elem.focus();
-    document.execCommand('insertText', false, key);
-  }
+  function insertTo(e, key) {
+    e.preventDefault();
 
-  // register keydown event
-  document.addEventListener("keydown", handleKeyDown);
+    var target = e.target,
+      isEditable = target.contentEditable == "true";
+
+    if (isEditable) {
+      target.focus();
+      document.execCommand("insertText", false, key);
+    } else {
+      var start = target.selectionStart,
+        end = target.selectionEnd,
+        val = target.value;
+      target.value =
+        val.substring(0, start) + key + val.substring(end, val.length);
+      target.selectionStart = start + 1;
+      target.selectionEnd = end + 1;
+    }
+  }
 })();
